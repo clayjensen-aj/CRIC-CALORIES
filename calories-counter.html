@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CricFuel 🏏 | Calorie Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   RESET & BASE
+========================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+:root {
+  --bg-deep:   #093326;
+  --bg-main:   #0d4533;
+  --bg-section:#0f5540;
+  --border:    rgba(255,255,255,0.14);
+  --text:      #ffffff;
+  --muted:     rgba(255,255,255,0.55);
+  --dim:       rgba(255,255,255,0.28);
+  --green:     #4cd98a;
+  --yellow:    #f5d060;
+  --red:       #ff7070;
+  --btn:       #eeeee4;
+  --radius:    14px;
+  --radius-sm: 8px;
+}
+ 
+html {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  background: var(--bg-deep);
+  color: var(--text);
+  -webkit-text-size-adjust: 100%;
+}
+ 
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg-main);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+ 
+/* =========================================================
+   HEADER
+========================================================= */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 22px 22px 0;
+  position: relative;
+  z-index: 2;
+}
+ 
+.icon-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 20px;
+  position: relative;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+.icon-btn:hover  { background: rgba(255,255,255,0.18); transform: scale(1.06); }
+.icon-btn:active { transform: scale(0.94); }
+ 
+.streak-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  background: var(--yellow);
+  color: #333;
+  border-radius: 50%;
+  width: 19px; height: 19px;
+  font-size: 10px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-main);
+}
+ 
+/* =========================================================
+   MONSTERA LEAF
+========================================================= */
+.monstera-wrap {
+  position: absolute;
+  top: -14px;
+  right: -18px;
+  width: 145px;
+  height: 175px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+ 
+/* =========================================================
+   STEP HEADERS
+========================================================= */
+.section {
+  padding: 0 18px;
+  position: relative;
+  z-index: 1;
+}
+ 
+.step-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+ 
+.step-number {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 68px;
+  line-height: 1;
+  color: var(--text);
+  letter-spacing: 3px;
+  text-shadow: 0 3px 16px rgba(0,0,0,0.35);
+}
+ 
+.step-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: -6px;
+}
+ 
+/* =========================================================
+   COLUMN HEADERS
+========================================================= */
+.col-heads {
+  display: grid;
+  gap: 6px;
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+.col-head {
+  font-size: 9px;
+  color: var(--dim);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.ex-cols  { grid-template-columns: 2fr 54px 54px 86px 28px; }
+.fd-cols  { grid-template-columns: 2fr 82px 64px 28px; }
+ 
+/* =========================================================
+   ROWS CONTAINER
+========================================================= */
+.rows-box {
+  background: rgba(0,0,0,0.18);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+ 
+.data-row {
+  display: grid;
+  align-items: center;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  gap: 6px;
+  transition: background 0.15s;
+  animation: rowIn 0.28s ease;
+}
+.data-row:last-child { border-bottom: none; }
+.data-row:hover { background: rgba(255,255,255,0.04); }
+ 
+@keyframes rowIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+ 
+.ex-row { grid-template-columns: 2fr 54px 54px 86px 28px; }
+.fd-row { grid-template-columns: 2fr 82px 64px 28px; }
+ 
+/* =========================================================
+   FORM CONTROLS
+========================================================= */
+select, input[type="number"], input[type="text"] {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 7px;
+  width: 100%;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  -webkit-appearance: none; appearance: none;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5L9 0z' fill='rgba(255,255,255,0.45)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  padding-right: 20px;
+}
+select:focus, input:focus {
+  outline: none;
+  border-color: var(--green);
+  background: rgba(255,255,255,0.11);
+}
+select option { background: #0d4533; color: white; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+ 
+.unit-tag {
+  font-size: 10px;
+  color: var(--green);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-word;
+  transition: all 0.2s;
+}
+ 
+.del-btn {
+  background: none;
+  border: none;
+  color: rgba(255,90,90,0.4);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 2px;
+  border-radius: 4px;
+  transition: color 0.18s;
+  line-height: 1;
+}
+.del-btn:hover { color: var(--red); }
+ 
+/* =========================================================
+   LIVE CAL HINT
+========================================================= */
+.cal-hint {
+  font-size: 9px;
+  color: rgba(76,217,138,0.7);
+  font-weight: 800;
+  text-align: right;
+  padding: 1px 4px 0;
+  grid-column: 1 / -1;
+  letter-spacing: 0.3px;
+}
+ 
+/* =========================================================
+   SEARCH / CUSTOM FOOD
+========================================================= */
+.search-box {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.search-status {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.25);
+}
+.search-status.searching { color: var(--yellow); }
+.search-status.found     { color: var(--green); }
+.search-status.nofound   { color: var(--red); }
+ 
+/* =========================================================
+   ADD MORE
+========================================================= */
+.add-more {
+  display: block;
+  text-align: center;
+  padding: 11px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  transition: color 0.18s;
+  letter-spacing: 0.3px;
+}
+.add-more:hover { color: var(--green); }
+ 
+/* =========================================================
+   CALCULATE BUTTON
+========================================================= */
+.calc-wrap {
+  padding: 26px 20px 30px;
+  display: flex;
+  justify-content: center;
+}
+ 
+.calc-btn {
+  background: var(--btn);
+  color: #0d4533;
+  border: none;
+  border-radius: 60px;
+  padding: 18px 52px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 30px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.calc-btn:hover  { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 44px rgba(0,0,0,0.4); }
+.calc-btn:active { transform: scale(0.96); }
+ 
+/* =========================================================
+   RESULT CARD
+========================================================= */
+.result-card {
+  margin: 0 18px 28px;
+  background: rgba(0,0,0,0.28);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  display: none;
+  animation: resultIn 0.5s cubic-bezier(0.34,1.4,0.64,1);
+}
+.result-card.show { display: block; }
+ 
+@keyframes resultIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+ 
+.res-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.res-row:last-child { border-bottom: none; }
+.res-label { color: var(--muted); font-weight: 700; }
+.res-val   { font-weight: 900; font-size: 18px; }
+.res-val.eaten  { color: var(--yellow); }
+.res-val.burned { color: var(--green); }
+.res-val.net    { font-size: 22px; }
+.res-val.surplus{ color: var(--red); }
+.res-val.deficit{ color: var(--green); }
+.res-val.balance{ color: var(--yellow); }
+ 
+.verdict {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.verdict.surplus { background:rgba(255,112,112,0.12); color:#ff9090; border:1px solid rgba(255,112,112,0.28); }
+.verdict.deficit { background:rgba(76,217,138,0.12); color:var(--green); border:1px solid rgba(76,217,138,0.28); }
+.verdict.balance { background:rgba(245,208,96,0.12); color:var(--yellow); border:1px solid rgba(245,208,96,0.28); }
+ 
+/* =========================================================
+   MODALS
+========================================================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: overlayIn 0.2s ease;
+}
+.overlay.center { align-items: center; }
+@keyframes overlayIn { from{opacity:0} to{opacity:1} }
+ 
+.modal {
+  background: #0d4533;
+  border-radius: var(--radius) var(--radius) 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 24px 22px 32px;
+  animation: modalUp 0.32s cubic-bezier(0.34,1.2,0.64,1);
+}
+.modal.center-modal {
+  border-radius: var(--radius);
+  width: 88%;
+  max-width: 360px;
+  align-self: center;
+  animation: modalScale 0.32s cubic-bezier(0.34,1.5,0.64,1);
+}
+@keyframes modalUp    { from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes modalScale { from{opacity:0;transform:scale(0.82)} to{opacity:1;transform:scale(1)} }
+ 
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.modal-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 28px;
+  letter-spacing: 1px;
+}
+.close-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s;
+  flex-shrink: 0;
+}
+.close-btn:hover { background: rgba(255,255,255,0.2); }
+ 
+/* =========================================================
+   CALENDAR
+========================================================= */
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.cal-month {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+.cal-arrow {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s;
+}
+.cal-arrow:hover { background: rgba(255,255,255,0.2); }
+ 
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.cal-dh {
+  text-align: center;
+  font-size: 9px;
+  color: var(--muted);
+  font-weight: 800;
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  position: relative;
+  cursor: default;
+  transition: all 0.18s;
+}
+.cal-day.empty   { visibility: hidden; }
+.cal-day.future  { color: var(--dim); }
+.cal-day.today   { background: rgba(255,255,255,0.13); color: white; }
+.cal-day.logged  { background: var(--green); color: #093326; }
+.cal-day.streak  { background: var(--yellow); color: #222; }
+ 
+.streak-panel {
+  margin-top: 18px;
+  background: rgba(245,208,96,0.1);
+  border: 1px solid rgba(245,208,96,0.28);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.streak-flame { font-size: 34px; }
+.streak-current {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 36px;
+  color: var(--yellow);
+  line-height: 1;
+}
+.streak-lbl  { font-size: 11px; color: var(--muted); font-weight: 700; }
+.streak-best {
+  margin-left: auto;
+  text-align: right;
+}
+.streak-best-val {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 26px;
+  color: rgba(245,208,96,0.6);
+}
+ 
+/* =========================================================
+   HISTORY
+========================================================= */
+.hist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hist-item:last-child { border-bottom: none; }
+.hist-date     { font-size: 14px; font-weight: 800; }
+.hist-day      { font-size: 11px; color: var(--muted); font-weight: 700; }
+.hist-net      { font-size: 17px; font-weight: 900; }
+.hist-details  { font-size: 10px; color: var(--muted); text-align: right; margin-top: 1px; }
+.empty-note {
+  text-align: center;
+  padding: 36px 0;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.7;
+}
+ 
+/* =========================================================
+   CELEBRATION
+========================================================= */
+.celeb-body    { text-align: center; padding: 8px 0 4px; }
+.celeb-trophy  {
+  font-size: 66px;
+  display: block;
+  margin-bottom: 12px;
+  animation: trophyBounce 0.55s ease infinite alternate;
+}
+@keyframes trophyBounce {
+  from { transform: translateY(0) rotate(-4deg); }
+  to   { transform: translateY(-10px) rotate(4deg); }
+}
+.celeb-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 34px;
+  color: var(--yellow);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.celeb-msg {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.celeb-streak {
+  background: rgba(245,208,96,0.1);
+  border: 1px solid rgba(245,208,96,0.28);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  font-size: 13px;
+  color: var(--yellow);
+  font-weight: 800;
+  margin-bottom: 22px;
+}
+.celeb-ok {
+  background: var(--green);
+  color: #093326;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 44px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 24px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: transform 0.18s;
+}
+.celeb-ok:hover { transform: scale(1.04); }
+ 
+/* =========================================================
+   CONFETTI
+========================================================= */
+.confetti-bit {
+  position: fixed;
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 200;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%   { opacity:1; transform: translateY(-20px) rotate(0deg); }
+  100% { opacity:0; transform: translateY(105vh) rotate(720deg); }
+}
+ 
+/* =========================================================
+   UTIL
+========================================================= */
+.hidden { display: none !important; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 2px; }
+</style>
+</head>
+<body>
+ 
+<!-- MONSTERA LEAF (top-right decoration) -->
+<div class="monstera-wrap" aria-hidden="true">
+<svg viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M96 245 C93 220, 88 195, 84 175" stroke="#1a6644" stroke-width="5" stroke-linecap="round"/>
+  <!-- Main leaf -->
+  <path d="M84 175
+    C68 158, 22 145, 10 105
+    C0 70, 22 22, 66 10
+    C108 -1, 158 22, 174 65
+    C190 105, 180 150, 154 170
+    C138 183, 115 190, 84 175Z"
+    fill="#155c38"/>
+  <!-- Leaf sheen -->
+  <path d="M84 173
+    C72 156, 38 140, 28 106
+    C20 76, 38 34, 68 20
+    C100 6, 148 26, 162 66
+    C176 100, 168 146, 148 165
+    C133 178, 112 186, 84 173Z"
+    fill="#2a8857" opacity="0.5"/>
+  <!-- Holes -->
+  <ellipse cx="72" cy="82" rx="13" ry="21" fill="#0d4533" transform="rotate(-22 72 82)"/>
+  <ellipse cx="116" cy="72" rx="11" ry="18" fill="#0d4533" transform="rotate(14 116 72)"/>
+  <ellipse cx="138" cy="118" rx="9" ry="16" fill="#0d4533" transform="rotate(28 138 118)"/>
+  <!-- Midrib -->
+  <path d="M84 172 C78 152, 64 118, 48 85 C36 60, 40 32, 66 14"
+    stroke="#155c38" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Lateral veins -->
+  <path d="M76 148 C96 140, 120 136, 150 142" stroke="#155c38" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <path d="M68 118 C86 110, 106 108, 136 116" stroke="#155c38" stroke-width="1.5" fill="none" opacity="0.8"/>
+  <path d="M60 90  C78  82, 96  80, 118  88" stroke="#155c38" stroke-width="1.5" fill="none" opacity="0.8"/>
+</svg>
+</div>
+ 
+<!-- HEADER -->
+<header class="header">
+  <button class="icon-btn" id="calBtn" title="Calendar &amp; Streak" aria-label="Open Calendar">
+    📅
+    <span class="streak-badge" id="streakBadge" style="display:none;">0</span>
+  </button>
+  <div style="flex:1;"></div>
+  <button class="icon-btn" id="histBtn" title="History" aria-label="Open History">🕐</button>
+</header>
+ 
+<!-- ===================== STEP 1: EXERCISES ===================== -->
+<section class="section" style="margin-top:58px;">
+  <div class="step-header">
+    <div class="step-number">STEP 1</div>
+    <div class="step-subtitle">Exercises</div>
+  </div>
+ 
+  <div class="col-heads ex-cols">
+    <span class="col-head">Exercise</span>
+    <span class="col-head" style="text-align:center;">Sets</span>
+    <span class="col-head" style="text-align:center;">Reps</span>
+    <span class="col-head" style="text-align:center;">Intensity</span>
+    <span class="col-head"></span>
+  </div>
+ 
+  <div class="rows-box" id="exRows"></div>
+  <button class="add-more" id="addExBtn">+ add more exercises</button>
+</section>
+ 
+<!-- ===================== STEP 2: FOOD ===================== -->
+<section class="section" style="margin-top:6px;">
+  <div class="step-header">
+    <div class="step-number">STEP 2</div>
+    <div class="step-subtitle">Food</div>
+  </div>
+ 
+  <div class="col-heads fd-cols">
+    <span class="col-head">Food Item</span>
+    <span class="col-head" style="text-align:center;">Amount</span>
+    <span class="col-head" style="text-align:center;">Calories</span>
+    <span class="col-head"></span>
+  </div>
+ 
+  <div class="rows-box" id="fdRows"></div>
+  <button class="add-more" id="addFdBtn">+ add more food</button>
+</section>
+ 
+<!-- CALCULATE BUTTON -->
+<div class="calc-wrap">
+  <button class="calc-btn" id="calcBtn">CALCULATE <span>🔥</span></button>
+</div>
+ 
+<!-- RESULT CARD -->
+<div class="result-card" id="resultCard">
+  <div class="res-row">
+    <span class="res-label">🍽️ Calories Eaten</span>
+    <span class="res-val eaten" id="resEaten">0 kcal</span>
+  </div>
+  <div class="res-row">
+    <span class="res-label">🏃 Calories Burned</span>
+    <span class="res-val burned" id="resBurned">0 kcal</span>
+  </div>
+  <div class="res-row">
+    <span class="res-label" style="font-size:16px;font-weight:900;">📊 Net Total</span>
+    <span class="res-val net" id="resNet">0 kcal</span>
+  </div>
+  <div class="verdict" id="verdict"></div>
+</div>
+ 
+<div style="height:44px;"></div>
+ 
+<!-- ===================== CALENDAR MODAL ===================== -->
+<div class="overlay hidden" id="calModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">📅 CALENDAR &amp; STREAK</span>
+      <button class="close-btn" onclick="closeModal('calModal')">✕</button>
+    </div>
+    <div class="cal-nav">
+      <button class="cal-arrow" id="calPrev">◀</button>
+      <span class="cal-month" id="calMonth"></span>
+      <button class="cal-arrow" id="calNext">▶</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="streak-panel">
+      <span class="streak-flame">🔥</span>
+      <div>
+        <div class="streak-current" id="calStreak">0</div>
+        <div class="streak-lbl">Day Streak</div>
+      </div>
+      <div class="streak-best">
+        <div class="streak-best-val" id="calBest">0</div>
+        <div class="streak-lbl">Best</div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===================== HISTORY MODAL ===================== -->
+<div class="overlay hidden" id="histModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">🕐 MY HISTORY</span>
+      <button class="close-btn" onclick="closeModal('histModal')">✕</button>
+    </div>
+    <div id="histList">
+      <div class="empty-note">No logs yet.<br>Start tracking today! 💪</div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===================== CELEBRATION MODAL ===================== -->
+<div class="overlay center hidden" id="celebModal" role="dialog" aria-modal="true">
+  <div class="modal center-modal">
+    <div class="celeb-body">
+      <span class="celeb-trophy">🏆</span>
+      <div class="celeb-title">AWESOME DAY!</div>
+      <div class="celeb-msg">
+        Congratulations, you did awesome today!<br>Come back tomorrow. 🏏
+      </div>
+      <div class="celeb-streak" id="celebStreak">🔥 Keep your streak going!</div>
+      <button class="celeb-ok" onclick="closeModal('celebModal')">LET'S GO! 💪</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===================== MAIN SCRIPT ===================== -->
+<script>
+'use strict';
+ 
+/* ============================================================
+   DATA — EXERCISES
+   calPerUnit: calories per 1 unit (rep or minute)
+   unitLabel:  what "reps" means in context
+============================================================ */
+const EX_DB = {
+  // Cricket-specific
+  'Batting Practice':    { c: 5.0, u: 'min'  },
+  'Bowling Practice':    { c: 4.5, u: 'min'  },
+  'Fielding Drills':     { c: 5.5, u: 'min'  },
+  'Cricket Match':       { c: 5.0, u: 'over' },
+  'Shadow Batting':      { c: 2.5, u: 'min'  },
+  'Wicketkeeping Drill': { c: 5.0, u: 'min'  },
+  // Cardio
+  'Running':             { c: 8.0, u: 'min'  },
+  'Sprinting':           { c:12.0, u: 'min'  },
+  'Cycling':             { c: 7.0, u: 'min'  },
+  'Swimming':            { c: 9.0, u: 'min'  },
+  'Jump Rope':           { c: 0.14,u: 'jump' },
+  'Brisk Walk':          { c: 4.0, u: 'min'  },
+  // Strength & Gym
+  'Push-ups':            { c: 0.32, u: 'rep' },
+  'Pull-ups':            { c: 0.85, u: 'rep' },
+  'Squats':              { c: 0.32, u: 'rep' },
+  'Lunges':              { c: 0.20, u: 'rep' },
+  'Burpees':             { c: 0.55, u: 'rep' },
+  'Sit-ups / Crunches':  { c: 0.15, u: 'rep' },
+  'Plank (seconds)':     { c: 0.06, u: 'sec' },
+  'Dumbbell Curls':      { c: 0.15, u: 'rep' },
+  'Bench Press':         { c: 0.25, u: 'rep' },
+  'Deadlifts':           { c: 0.50, u: 'rep' },
+  'Shoulder Press':      { c: 0.22, u: 'rep' },
+  'Leg Press':           { c: 0.20, u: 'rep' },
+  // Mind & Flexibility
+  'Yoga':                { c: 3.0,  u: 'min' },
+  'Stretching':          { c: 2.0,  u: 'min' },
+};
+ 
+const INTENSITY_MULT = {
+  'High (Full Effort)': 1.3,
+  'Medium (Normal)':    1.0,
+  'Low (Easy / Tired)': 0.7,
+};
+ 
+/* ============================================================
+   DATA — FOOD
+   cal: kcal per unit (if isCount=true: per 1 piece, else per 100g/ml)
+   unit: display unit
+   isCount: true → piece-based, false → gram/ml-based
+============================================================ */
+const FD_DB = {
+  // ---- COUNT-BASED (breads / pieces) ----
+  'Roti (Plain)':          { cal: 80,  u: 'roti',    isCount: true  },
+  'Aloo Paratha':          { cal: 200, u: 'paratha',  isCount: true  },
+  'Puri':                  { cal: 90,  u: 'puri',     isCount: true  },
+  'Dosa (Plain)':          { cal: 110, u: 'dosa',     isCount: true  },
+  'Masala Dosa':           { cal: 200, u: 'dosa',     isCount: true  },
+  'Idli':                  { cal: 58,  u: 'idli',     isCount: true  },
+  'Medu Vada':             { cal: 97,  u: 'vada',     isCount: true  },
+  'Pav (Bread Roll)':      { cal: 100, u: 'pav',      isCount: true  },
+  'Samosa':                { cal: 262, u: 'samosa',   isCount: true  },
+  'Gulab Jamun':           { cal: 175, u: 'piece',    isCount: true  },
+  'Ladoo (Besan)':         { cal: 185, u: 'piece',    isCount: true  },
+  'Egg (Boiled)':          { cal: 72,  u: 'egg',      isCount: true  },
+  'Banana':                { cal: 89,  u: 'banana',   isCount: true  },
+  'Maggi Noodles (1 pkt)': { cal: 350, u: 'pack',     isCount: true  },
+  'Burger':                { cal: 295, u: 'burger',   isCount: true  },
+  // ---- GRAM / ML BASED ----
+  'Rice (Cooked)':         { cal: 130, u: 'g',   isCount: false },
+  'Biryani':               { cal: 200, u: 'g',   isCount: false },
+  'Khichdi':               { cal: 118, u: 'g',   isCount: false },
+  'Poha':                  { cal: 76,  u: 'g',   isCount: false },
+  'Upma':                  { cal: 130, u: 'g',   isCount: false },
+  'Dal (Cooked)':          { cal: 116, u: 'g',   isCount: false },
+  'Rajma':                 { cal: 127, u: 'g',   isCount: false },
+  'Chole (Chana Masala)':  { cal: 164, u: 'g',   isCount: false },
+  'Sabzi (Mixed Veg)':     { cal: 60,  u: 'g',   isCount: false },
+  'Aloo Sabzi':            { cal: 88,  u: 'g',   isCount: false },
+  'Palak Paneer':          { cal: 165, u: 'g',   isCount: false },
+  'Paneer Butter Masala':  { cal: 180, u: 'g',   isCount: false },
+  'Paneer':                { cal: 265, u: 'g',   isCount: false },
+  'Chicken Curry':         { cal: 150, u: 'g',   isCount: false },
+  'Tandoori Chicken':      { cal: 140, u: 'g',   isCount: false },
+  'Mutton Curry':          { cal: 180, u: 'g',   isCount: false },
+  'Fish Curry':            { cal: 140, u: 'g',   isCount: false },
+  'Curd / Dahi':           { cal: 61,  u: 'g',   isCount: false },
+  'Milk':                  { cal: 61,  u: 'ml',  isCount: false },
+  'Lassi (Sweet)':         { cal: 90,  u: 'ml',  isCount: false },
+  'Lassi (Salted)':        { cal: 40,  u: 'ml',  isCount: false },
+  'Buttermilk (Chaas)':    { cal: 40,  u: 'ml',  isCount: false },
+  'Protein Shake':         { cal: 120, u: 'ml',  isCount: false },
+  'Apple':                 { cal: 52,  u: 'g',   isCount: false },
+  'Mango':                 { cal: 60,  u: 'g',   isCount: false },
+  'Watermelon':            { cal: 30,  u: 'g',   isCount: false },
+  'Peanuts':               { cal: 567, u: 'g',   isCount: false },
+  'Almonds':               { cal: 579, u: 'g',   isCount: false },
+  'Cashew':                { cal: 553, u: 'g',   isCount: false },
+  'Jalebi':                { cal: 387, u: 'g',   isCount: false },
+  'Chips (Lays/Bingo)':    { cal: 536, u: 'g',   isCount: false },
+  'Pizza':                 { cal: 266, u: 'g',   isCount: false },
+  'Cold Drink (Cola)':     { cal: 42,  u: 'ml',  isCount: false },
+  'Chocolate':             { cal: 546, u: 'g',   isCount: false },
+  'Ice Cream':             { cal: 207, u: 'g',   isCount: false },
+};
+ 
+const COUNT_FOODS = Object.keys(FD_DB).filter(k => FD_DB[k].isCount);
+const GRAM_FOODS  = Object.keys(FD_DB).filter(k => !FD_DB[k].isCount);
+ 
+/* ============================================================
+   STATE
+============================================================ */
+let exCount  = 0;
+let fdCount  = 0;
+let calView  = new Date();
+let history  = JSON.parse(localStorage.getItem('cricfuel_v2') || '{}');
+ 
+/* ============================================================
+   UTILITIES
+============================================================ */
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+ 
+function formatDateStr(key) {
+  const [y,m,d] = key.split('-');
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${parseInt(d)} ${MONTHS[parseInt(m)-1]} ${y}`;
+}
+function dayName(key) {
+  return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(key+'T00:00:00').getDay()];
+}
+ 
+function saveHistory() {
+  localStorage.setItem('cricfuel_v2', JSON.stringify(history));
+}
+ 
+function getStreak() {
+  let curr = 0, best = 0, tmp = 0;
+  const keys = Object.keys(history).sort();
+ 
+  for (let i = 0; i < keys.length; i++) {
+    if (i === 0) { tmp = 1; }
+    else {
+      const diff = (new Date(keys[i]) - new Date(keys[i-1])) / 86400000;
+      tmp = diff === 1 ? tmp + 1 : 1;
+    }
+    if (tmp > best) best = tmp;
+  }
+ 
+  let check = new Date(); check.setHours(0,0,0,0);
+  while (true) {
+    const k = `${check.getFullYear()}-${pad(check.getMonth()+1)}-${pad(check.getDate())}`;
+    if (history[k]) { curr++; check.setDate(check.getDate()-1); }
+    else break;
+  }
+  return { curr, best };
+}
+ 
+/* ============================================================
+   BUILD EXERCISE ROW
+============================================================ */
+function buildExRow(id) {
+  const exOpts = Object.keys(EX_DB)
+    .map(n => `<option value="${n}">${n}</option>`)
+    .join('');
+  const intOpts = Object.keys(INTENSITY_MULT)
+    .map(n => `<option value="${n}">${n}</option>`)
+    .join('');
+ 
+  const div = document.createElement('div');
+  div.className = 'data-row ex-row';
+  div.id = `ex-${id}`;
+  div.innerHTML = `
+    <div>
+      <select id="ex-n-${id}" onchange="calcExHint(${id})">
+        <option value="">— Choose —</option>
+        ${exOpts}
+      </select>
+    </div>
+    <input type="number" id="ex-s-${id}" value="3" min="1" max="99"
+           style="text-align:center;" onchange="calcExHint(${id})">
+    <input type="number" id="ex-r-${id}" value="10" min="1" max="9999"
+           style="text-align:center;" onchange="calcExHint(${id})">
+    <div>
+      <select id="ex-i-${id}" onchange="calcExHint(${id})">${intOpts}</select>
+    </div>
+    <button class="del-btn" onclick="delRow('ex-${id}')">✕</button>
+    <div class="cal-hint" id="ex-h-${id}"></div>`;
+  return div;
+}
+ 
+function calcExHint(id) {
+  const n = v(`ex-n-${id}`), s = parseFloat(v(`ex-s-${id}`))||0,
+        r = parseFloat(v(`ex-r-${id}`))||0, i = v(`ex-i-${id}`);
+  const hint = document.getElementById(`ex-h-${id}`);
+  if (!hint) return;
+  if (!n || !EX_DB[n]) { hint.textContent = ''; return; }
+  const cal = Math.round(EX_DB[n].c * s * r * (INTENSITY_MULT[i]||1));
+  hint.textContent = cal > 0 ? `≈ ${cal} kcal burned  (${EX_DB[n].u}/rep)` : '';
+}
+ 
+/* ============================================================
+   BUILD FOOD ROW — ROTI (count-based, 1-10)
+============================================================ */
+function buildRotiRow(id) {
+  const nameOpts = COUNT_FOODS
+    .map(n => `<option value="${n}" ${n==='Roti (Plain)'?'selected':''}>${n}</option>`)
+    .join('');
+  const amtOpts  = Array.from({length:10},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+ 
+  const div = document.createElement('div');
+  div.className = 'data-row fd-row';
+  div.id = `fd-${id}`;
+  div.innerHTML = `
+    <div>
+      <select id="fd-n-${id}" onchange="calcFdHint(${id})">${nameOpts}</select>
+    </div>
+    <select id="fd-a-${id}" style="text-align:center;" onchange="calcFdHint(${id})">${amtOpts}</select>
+    <div class="unit-tag" id="fd-u-${id}">= 80 kcal</div>
+    <button class="del-btn" onclick="delRow('fd-${id}')">✕</button>`;
+  div.dataset.type = 'count';
+  return div;
+}
+ 
+/* ============================================================
+   BUILD FOOD ROW — GRAM-BASED
+============================================================ */
+function buildGramRow(id) {
+  const allOpts = [...COUNT_FOODS, ...GRAM_FOODS]
+    .map(n => `<option value="${n}">${n}</option>`)
+    .join('');
+ 
+  const div = document.createElement('div');
+  div.className = 'data-row fd-row';
+  div.id = `fd-${id}`;
+  div.innerHTML = `
+    <div>
+      <select id="fd-n-${id}" onchange="onFdNameChange(${id})">
+        <option value="">— Choose Food —</option>
+        ${allOpts}
+        <option value="__custom__">🔍 Search online...</option>
+      </select>
+      <div class="search-box hidden" id="fd-sb-${id}">
+        <input type="text" id="fd-q-${id}" placeholder="Type food name..."
+               oninput="scheduleLookup(${id})">
+        <div class="search-status hidden" id="fd-st-${id}"></div>
+        <input type="number" id="fd-mc-${id}" placeholder="Cal per 100g (manual)"
+               class="hidden" min="0" max="9999" onchange="calcFdHint(${id})">
+      </div>
+    </div>
+    <input type="number" id="fd-a-${id}" value="100" min="0" max="9999"
+           style="text-align:center;" onchange="calcFdHint(${id})">
+    <div class="unit-tag" id="fd-u-${id}">g</div>
+    <button class="del-btn" onclick="delRow('fd-${id}')">✕</button>`;
+  div.dataset.type = 'gram';
+  return div;
+}
+ 
+function onFdNameChange(id) {
+  const sel = v(`fd-n-${id}`);
+  const sb  = document.getElementById(`fd-sb-${id}`);
+  const unitTag = document.getElementById(`fd-u-${id}`);
+ 
+  if (sel === '__custom__') {
+    sb && sb.classList.remove('hidden');
+  } else {
+    sb && sb.classList.add('hidden');
+    if (sel && FD_DB[sel]) {
+      const fd = FD_DB[sel];
+      // If count-based food chosen in gram row, adapt
+      const amtEl = document.getElementById(`fd-a-${id}`);
+      if (fd.isCount && amtEl) {
+        amtEl.min = 1; amtEl.max = 20; amtEl.value = 1;
+      }
+    }
+    calcFdHint(id);
+  }
+}
+ 
+function calcFdHint(id) {
+  const name    = v(`fd-n-${id}`);
+  const amtEl   = document.getElementById(`fd-a-${id}`);
+  const unitTag = document.getElementById(`fd-u-${id}`);
+  if (!unitTag) return;
+ 
+  if (!name || name === '__custom__') { unitTag.textContent = 'kcal'; return; }
+ 
+  const fd  = FD_DB[name];
+  if (!fd) { unitTag.textContent = 'g'; return; }
+ 
+  const amt = parseFloat(amtEl?.value) || (fd.isCount ? 1 : 100);
+  const cal = fd.isCount ? Math.round(fd.cal * amt) : Math.round(fd.cal * amt / 100);
+  unitTag.textContent = `= ${cal} kcal`;
+}
+ 
+/* ============================================================
+   ONLINE FOOD LOOKUP (Open Food Facts)
+============================================================ */
+const lookupTimers = {};
+ 
+function scheduleLookup(id) {
+  clearTimeout(lookupTimers[id]);
+  const q = v(`fd-q-${id}`)?.trim();
+  if (!q || q.length < 3) return;
+  lookupTimers[id] = setTimeout(() => doLookup(id, q), 900);
+}
+ 
+async function doLookup(id, query) {
+  const st = document.getElementById(`fd-st-${id}`);
+  const mc = document.getElementById(`fd-mc-${id}`);
+  if (!st || !mc) return;
+ 
+  st.className = 'search-status searching';
+  st.textContent = '🔍 Searching online...';
+  st.classList.remove('hidden');
+ 
+  try {
+    const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=5&fields=product_name,nutriments`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    const data = await res.json();
+ 
+    const hit = (data.products||[]).find(p =>
+      p.nutriments && (p.nutriments['energy-kcal_100g'] != null || p.nutriments['energy_100g'] != null)
+    );
+ 
+    if (hit) {
+      const kcal = hit.nutriments['energy-kcal_100g'] ??
+                   Math.round((hit.nutriments['energy_100g']||0) / 4.184);
+      st.className = 'search-status found';
+      st.textContent = `✓ ${hit.product_name||query}: ~${Math.round(kcal)} kcal/100g`;
+      mc.value = Math.round(kcal);
+      mc.classList.remove('hidden');
+      calcFdHint(id);
+    } else {
+      throw new Error('not found');
+    }
+  } catch (_) {
+    st.className = 'search-status nofound';
+    st.textContent = navigator.onLine
+      ? '✗ Not found — enter calories manually below:'
+      : '✗ No internet — enter calories manually below:';
+    mc.classList.remove('hidden');
+  }
+}
+ 
+/* ============================================================
+   ROW MANAGEMENT
+============================================================ */
+function v(id) { return document.getElementById(id)?.value ?? ''; }
+ 
+function addExRow() {
+  exCount++;
+  document.getElementById('exRows').appendChild(buildExRow(exCount));
+}
+ 
+function addFdRotiRow() {
+  fdCount++;
+  document.getElementById('fdRows').appendChild(buildRotiRow(fdCount));
+}
+ 
+function addFdGramRow() {
+  fdCount++;
+  document.getElementById('fdRows').appendChild(buildGramRow(fdCount));
+}
+ 
+function delRow(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.transition = 'opacity 0.2s, transform 0.2s, max-height 0.25s';
+  el.style.opacity = '0';
+  el.style.transform = 'translateX(16px)';
+  el.style.maxHeight = el.offsetHeight + 'px';
+  requestAnimationFrame(() => { el.style.maxHeight = '0'; el.style.padding = '0'; });
+  setTimeout(() => el.remove(), 280);
+}
+ 
+/* ============================================================
+   CALCULATE
+============================================================ */
+function getRowCal_Ex(id) {
+  const n = v(`ex-n-${id}`), s = parseFloat(v(`ex-s-${id}`))||0,
+        r = parseFloat(v(`ex-r-${id}`))||0, int = v(`ex-i-${id}`);
+  if (!n || !EX_DB[n]) return 0;
+  return Math.round(EX_DB[n].c * s * r * (INTENSITY_MULT[int]||1));
+}
+ 
+function getRowCal_Fd(rowEl) {
+  const id = rowEl.id.replace('fd-','');
+  const name = v(`fd-n-${id}`);
+  if (!name) return 0;
+ 
+  if (name === '__custom__') {
+    const mc = document.getElementById(`fd-mc-${id}`);
+    if (!mc || mc.classList.contains('hidden') || !mc.value) return 0;
+    const amt = parseFloat(v(`fd-a-${id}`))||100;
+    return Math.round((parseFloat(mc.value)||0) * amt / 100);
+  }
+ 
+  const fd = FD_DB[name];
+  if (!fd) return 0;
+  const amt = parseFloat(v(`fd-a-${id}`))||( fd.isCount ? 1 : 100 );
+  return fd.isCount ? Math.round(fd.cal * amt) : Math.round(fd.cal * amt / 100);
+}
+ 
+function doCalculate() {
+  let burned = 0, eaten = 0;
+ 
+  const exRows = document.getElementById('exRows').querySelectorAll('.data-row');
+  exRows.forEach(row => {
+    const id = row.id.replace('ex-','');
+    burned += getRowCal_Ex(id);
+  });
+ 
+  const fdRows = document.getElementById('fdRows').querySelectorAll('.data-row');
+  fdRows.forEach(row => { eaten += getRowCal_Fd(row); });
+ 
+  const net = eaten - burned;
+ 
+  // Render result
+  document.getElementById('resEaten').textContent  = `${eaten} kcal`;
+  document.getElementById('resBurned').textContent = `${burned} kcal`;
+  const netEl = document.getElementById('resNet');
+  netEl.textContent = (net >= 0 ? '+' : '') + net + ' kcal';
+  netEl.className = 'res-val net ' + (net > 200 ? 'surplus' : net < -200 ? 'deficit' : 'balance');
+ 
+  const vEl = document.getElementById('verdict');
+  if (net > 200) {
+    vEl.className = 'verdict surplus';
+    vEl.textContent = '⚠️ Calorie Surplus — You ate more than you burned. More training tomorrow!';
+  } else if (net < -200) {
+    vEl.className = 'verdict deficit';
+    vEl.textContent = '💪 Calorie Deficit — Excellent! Your body is burning fat!';
+  } else {
+    vEl.className = 'verdict balance';
+    vEl.textContent = '⚡ Perfectly Balanced — Great for maintenance and performance!';
+  }
+ 
+  const rc = document.getElementById('resultCard');
+  rc.classList.add('show');
+  setTimeout(() => rc.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+ 
+  // Save to history
+  const today = todayKey();
+  history[today] = { eaten, burned, net, ts: Date.now() };
+  saveHistory();
+  updateStreakBadge();
+ 
+  // Celebrate
+  launchConfetti();
+  setTimeout(() => showCelebration(), 700);
+}
+ 
+/* ============================================================
+   CELEBRATION & CONFETTI
+============================================================ */
+function showCelebration() {
+  const { curr, best } = getStreak();
+  const el = document.getElementById('celebStreak');
+  if (el) {
+    if (curr === 1)           el.textContent = `🔥 Day 1 — Your streak has begun!`;
+    else if (curr === best)   el.textContent = `🔥 NEW RECORD! ${curr} day streak — You're on fire!`;
+    else                      el.textContent = `🔥 ${curr} day streak! Keep pushing!`;
+  }
+  openModal('celebModal');
+}
+ 
+function launchConfetti() {
+  const cols = ['#4cd98a','#f5d060','#ff7070','#74b9ff','#ffffff','#fd79a8'];
+  for (let i = 0; i < 36; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-bit';
+      p.style.cssText = `left:${Math.random()*100}vw;top:-10px;
+        background:${cols[i%cols.length]};
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+        animation-duration:${1.2+Math.random()*0.8}s;`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 2200);
+    }, i * 45);
+  }
+}
+ 
+/* ============================================================
+   CALENDAR
+============================================================ */
+const MONTHS = ['January','February','March','April','May','June',
+                'July','August','September','October','November','December'];
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+ 
+function renderCal() {
+  const yr = calView.getFullYear(), mo = calView.getMonth();
+  document.getElementById('calMonth').textContent = `${MONTHS[mo]} ${yr}`;
+ 
+  const today    = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(yr, mo, 1).getDay();
+  const daysInMo = new Date(yr, mo + 1, 0).getDate();
+ 
+  let html = DAYS.map(d => `<div class="cal-dh">${d}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-day empty"></div>`;
+ 
+  for (let d = 1; d <= daysInMo; d++) {
+    const key   = `${yr}-${pad(mo+1)}-${pad(d)}`;
+    const date  = new Date(yr, mo, d);
+    const isLog = !!history[key];
+    const isTod = date.getTime() === today.getTime();
+    const isFut = date > today;
+    let cls = 'cal-day';
+    if (isLog)             cls += ' logged';
+    else if (isTod)        cls += ' today';
+    else if (isFut)        cls += ' future';
+    const tip = history[key] ? `Net: ${history[key].net > 0 ? '+' : ''}${history[key].net} kcal` : '';
+    html += `<div class="${cls}" title="${tip}">${d}</div>`;
+  }
+ 
+  document.getElementById('calGrid').innerHTML = html;
+  const { curr, best } = getStreak();
+  document.getElementById('calStreak').textContent = curr;
+  document.getElementById('calBest').textContent   = best;
+}
+ 
+function updateStreakBadge() {
+  const { curr } = getStreak();
+  const badge = document.getElementById('streakBadge');
+  if (!badge) return;
+  badge.textContent    = curr;
+  badge.style.display  = curr > 0 ? 'flex' : 'none';
+}
+ 
+/* ============================================================
+   HISTORY
+============================================================ */
+function renderHistory() {
+  const keys = Object.keys(history).sort().reverse();
+  const list = document.getElementById('histList');
+ 
+  if (!keys.length) {
+    list.innerHTML = `<div class="empty-note">No logs yet.<br>Start tracking today! 💪</div>`;
+    return;
+  }
+ 
+  list.innerHTML = keys.map(k => {
+    const h = history[k];
+    const col = h.net > 0 ? 'var(--red)' : h.net < 0 ? 'var(--green)' : 'var(--yellow)';
+    const sign = h.net > 0 ? '+' : '';
+    return `<div class="hist-item">
+      <div>
+        <div class="hist-date">${formatDateStr(k)}</div>
+        <div class="hist-day">${dayName(k)}</div>
+      </div>
+      <div>
+        <div class="hist-net" style="color:${col}">${sign}${h.net} kcal</div>
+        <div class="hist-details">Ate: ${h.eaten} | Burned: ${h.burned}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+ 
+/* ============================================================
+   MODAL HELPERS
+============================================================ */
+function openModal(id) {
+  document.getElementById(id).classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+  document.body.style.overflow = '';
+}
+ 
+/* ============================================================
+   INIT
+============================================================ */
+function init() {
+  // Build 5 exercise rows
+  for (let i = 0; i < 5; i++) addExRow();
+  // First food row = Roti (count), then 4 gram rows
+  addFdRotiRow();
+  for (let i = 0; i < 4; i++) addFdGramRow();
+ 
+  // Default first exercise = Batting Practice
+  const firstEx = document.getElementById('ex-n-1');
+  if (firstEx) { firstEx.value = 'Batting Practice'; calcExHint(1); }
+ 
+  // Buttons
+  document.getElementById('addExBtn').addEventListener('click', addExRow);
+  document.getElementById('addFdBtn').addEventListener('click', addFdGramRow);
+  document.getElementById('calcBtn').addEventListener('click', doCalculate);
+ 
+  document.getElementById('calBtn').addEventListener('click', () => {
+    renderCal();
+    openModal('calModal');
+  });
+  document.getElementById('histBtn').addEventListener('click', () => {
+    renderHistory();
+    openModal('histModal');
+  });
+ 
+  document.getElementById('calPrev').addEventListener('click', () => {
+    calView.setMonth(calView.getMonth() - 1); renderCal();
+  });
+  document.getElementById('calNext').addEventListener('click', () => {
+    calView.setMonth(calView.getMonth() + 1); renderCal();
+  });
+ 
+  // Close modal on outside click
+  document.querySelectorAll('.overlay').forEach(ov => {
+    ov.addEventListener('click', e => {
+      if (e.target === ov) closeModal(ov.id);
+    });
+  });
+ 
+  // Init roti hint
+  setTimeout(() => calcFdHint(1), 50);
+ 
+  // Update streak badge
+  updateStreakBadge();
+}
+ 
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
