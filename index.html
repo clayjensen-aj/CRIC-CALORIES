@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> <link rel="manifest" href="manifest.json">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CricFuel by Anubhav Jha</title>
@@ -1409,6 +1409,11 @@ function init() {
 }
  
 document.addEventListener('DOMContentLoaded', init);
+</script>
+   <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
 </script>
 </body>
 </html>
