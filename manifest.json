@@ -1,0 +1,20 @@
+{
+  "name": "CRICFUEL By ANUBHAV",
+  "short_name": "CricFuel",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#093326",
+  "theme_color": "#4cd98a",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
